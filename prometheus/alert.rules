@@ -1,0 +1,73 @@
+groups:
+- name: example
+  rules:
+
+  # Alert for any instance that is unreachable for >2 minutes.
+  - alert: ServiceDown
+    expr: up == 0
+    for: 2m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Instance {{ $labels.instance }} down"
+      description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 2 minutes."
+
+  # High Load Alert
+  - alert: HighLoad
+    expr: node_load1 > 0.5
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Instance {{ $labels.instance }} under high load"
+      description: "{{ $labels.instance }} of job {{ $labels.job }} is under high load (load1={{ $value }})."
+
+  # High CPU Usage
+  - alert: HighCPUUsage
+    expr: (100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)) > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High CPU usage on {{ $labels.instance }}"
+      description: "CPU usage is above 80% on {{ $labels.instance }} (current: {{ $value | humanizePercentage }})"
+
+  # High Memory Usage
+  - alert: HighMemoryUsage
+    expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 85
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High memory usage on {{ $labels.instance }}"
+      description: "Memory usage is above 85% on {{ $labels.instance }} (current: {{ $value | humanizePercentage }})"
+
+  # Disk Space Alert
+  - alert: DiskSpaceLow
+    expr: (node_filesystem_avail_bytes{fstype!~"tmpfs|fuse.lxcfs|squashfs|vfat|iso9660"} / node_filesystem_size_bytes) * 100 < 15
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Low disk space on {{ $labels.instance }}"
+      description: "Disk space is below 15% on {{ $labels.device }} (current: {{ $value | humanizePercentage }} free)"
+
+  # Network errors
+  - alert: HighNetworkErrors
+    expr: rate(node_network_transmit_errs_total[5m]) > 0 or rate(node_network_receive_errs_total[5m]) > 0
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High network errors on {{ $labels.instance }}"
+      description: "Network errors detected on {{ $labels.instance }} (interface: {{ $labels.device }})"
+
+  # Container issues
+  - alert: ContainerDown
+    expr: container_last_seen < time() - 60
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Container {{ $labels.name }} is down"
+      description: "Container {{ $labels.name }} on host {{ $labels.hostname }} has been down for more than 2 minutes."
