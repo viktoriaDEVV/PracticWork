@@ -15,7 +15,6 @@ services:
     ports:
       - "9090:9090"
     depends_on:
-      - cadvisor
 #      - pushgateway
     networks:
       - back
@@ -28,19 +27,20 @@ services:
       start_period: 40s
 
 
-  cadvisor:
-    image: google/cadvisor:latest
-    container_name: cadvisor
-    ports:
-      - "8080:8080"
-    volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:rw
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
-    networks:
-      - back
-    restart: always
+  # cadvisor:
+  #   image: google/cadvisor:latest
+  #   container_name: cadvisor
+  #   ports:
+  #     - "8080:8080"
+  #   volumes:
+  #     - /:/rootfs:ro
+  #     - /var/run:/var/run:rw
+  #     - /sys:/sys:ro
+  #     - /sys/fs/cgroup:/sys/fs/cgroup:ro
+  #     - /var/lib/docker/:/var/lib/docker:ro
+  #   networks:
+  #     - back
+  #   restart: always
 
   
   node-exporter:

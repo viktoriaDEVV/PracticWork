@@ -6,9 +6,9 @@ receivers:
 - name: 'email'
   email_configs:
   - to: 'grreenbblue@gmail.com'
-    from: 'heathgo.health.app@gmail.com'
+    from: 'healthgo.health.app@gmail.com'
     smarthost: 'smtp.gmail.com:587'
-    auth_username: 'heathgo.health.app@gmail.com'
+    auth_username: 'healthgo.health.app@gmail.com'
     auth_password_file: /run/secrets/smtp_password
-    auth_identity: 'heathgo.health.app@gmail.com'
+    auth_identity: 'healthgo.health.app@gmail.com'
     require_tls: true
