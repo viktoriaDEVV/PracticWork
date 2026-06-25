@@ -62,6 +62,36 @@ groups:
       summary: "High network errors on {{ $labels.instance }}"
       description: "Network errors detected on {{ $labels.instance }} (interface: {{ $labels.device }})"
 
+  # High HTTP error rate for instrumented-app
+  - alert: HighHttpErrorRate
+    expr: rate(http_requests_total{status=~"5..", job="instrumented-app"}[5m]) / rate(http_requests_total{job="instrumented-app"}[5m]) > 0.05
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High HTTP error rate on instrumented-app"
+      description: "Error rate is above 5% on instrumented-app (current: {{ $value | humanizePercentage }})"
+
+  # High request latency for instrumented-app
+  - alert: HighRequestLatency
+    expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="instrumented-app"}[5m])) > 2
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High request latency on instrumented-app"
+      description: "95th percentile latency is above 2s on instrumented-app (current: {{ $value }}s)"
+
+  # High process memory usage
+  - alert: HighProcessMemoryUsage
+    expr: process_memory_rss_bytes{job="instrumented-app"} > 200 * 1024 * 1024
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High memory usage on instrumented-app"
+      description: "Process memory is above 200 MB on instrumented-app (current: {{ $value | humanize1024 }})"
+
   # Container issues
   - alert: ContainerDown
     expr: container_last_seen < time() - 60

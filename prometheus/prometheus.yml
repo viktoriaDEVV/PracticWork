@@ -31,6 +31,10 @@ scrape_configs:
   - job_name: 'loki'
     static_configs:
       - targets: ['loki:3100']
+  - job_name: 'instrumented-app'
+    static_configs:
+      - targets: ['instrumented-app:5000']
+
   - job_name: 'blackbox'
     metrics_path: /probe
     static_configs:
@@ -41,6 +45,7 @@ scrape_configs:
         - http://loki:3100             
         - http://blackbox_exporter:9115 
         - http://node-exporter:9100  
+        - http://instrumented-app:5000
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target

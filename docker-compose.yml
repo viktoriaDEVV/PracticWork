@@ -115,6 +115,21 @@ services:
       - loki
 
 
+  instrumented-app:
+    build: ./instrumented_app
+    container_name: instrumented-app
+    ports:
+      - "5000:5000"
+    networks:
+      - back
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
   blackbox_exporter:
     image: prom/blackbox-exporter:latest
     container_name: blackbox_exporter
