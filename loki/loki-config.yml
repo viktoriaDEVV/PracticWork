@@ -2,6 +2,7 @@ auth_enabled: false
 
 server:
   http_listen_port: 3100
+  grpc_listen_port: 9095
   log_level: info
 
 common:
@@ -32,18 +33,21 @@ ingester:
   max_chunk_age: 1h
   chunk_encoding: snappy
 
+querier:
+  max_concurrent: 10
+
 limits_config:
   reject_old_samples: true
   reject_old_samples_max_age: 168h
   max_streams_per_user: 10000
+  max_query_length: 720h
 
 storage_config:
   tsdb_shipper:
     active_index_directory: /loki/tsdb-shipper-active
     cache_location: /loki/tsdb-shipper-cache
-
-querier:
-  max_look_back_period: 0s
+    index_gateway_client:
+      server_address: dns:///loki:9095
 
 table_manager:
   retention_deletes_enabled: true
@@ -51,6 +55,8 @@ table_manager:
 
 query_range:
   align_queries_with_step: true
+  max_retries: 5
+  parallelise_shardable_queries: true
 
 frontend:
   compress_responses: true
